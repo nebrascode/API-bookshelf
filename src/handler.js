@@ -78,37 +78,85 @@ const addBookHandler = (request, h) => {
 };
 
 const getAllBooksHandler = (request, h) => {
-  // Mendapatkan nilai dari query parameters
   const { name, reading, finished } = request.query;
 
-  let filteredBooks = books;
+  if (!name && !reading && !finished) {
+    const response = h
+      .response({
+        status: 'success',
+        data: {
+          books: books.map((book) => ({
+            id: book.id,
+            name: book.name,
+            publisher: book.publisher,
+          })),
+        },
+      })
+      .code(200);
 
-  // Filter berdasarkan nama
+    return response;
+  }
+
   if (name) {
-    const searchName = name.toLowerCase();
-    filteredBooks = filteredBooks.filter((book) => book.name.toLowerCase().includes(searchName));
+    const filteredBooksName = books.filter((book) => {
+      const nameRegex = new RegExp(name, 'gi');
+      return nameRegex.test(book.name);
+    });
+
+    const response = h
+      .response({
+        status: 'success',
+        data: {
+          books: filteredBooksName.map((book) => ({
+            id: book.id,
+            name: book.name,
+            publisher: book.publisher,
+          })),
+        },
+      })
+      .code(200);
+
+    return response;
   }
 
-  if (reading !== undefined) {
-    const isReading = reading === '1';
-    filteredBooks = filteredBooks.filter((book) => book.reading === isReading);
-  }
-
-  if (finished !== undefined) {
-    const isFinished = finished === '1';
-    filteredBooks = filteredBooks.filter(
-      (book) => book.finished === isFinished,
+  if (reading) {
+    const filteredBooksReading = books.filter(
+      (book) => Number(book.reading) === Number(reading),
     );
+
+    const response = h
+      .response({
+        status: 'success',
+        data: {
+          books: filteredBooksReading.map((book) => ({
+            id: book.id,
+            name: book.name,
+            publisher: book.publisher,
+          })),
+        },
+      })
+      .code(200);
+
+    return response;
   }
+
+  const filteredBooksFinished = books.filter(
+    (book) => Number(book.finished) === Number(finished),
+  );
 
   const response = h
     .response({
       status: 'success',
       data: {
-        books: filteredBooks,
+        books: filteredBooksFinished.map((book) => ({
+          id: book.id,
+          name: book.name,
+          publisher: book.publisher,
+        })),
       },
     })
     .code(200);
+
   return response;
 };
 
