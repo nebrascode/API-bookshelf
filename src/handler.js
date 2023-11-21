@@ -163,9 +163,9 @@ const getAllBooksHandler = (request, h) => {
 const getBookByIdHandler = (request, h) => {
   const { bookId } = request.params;
 
-  const book = books.filter((n) => n.id === bookId)[0];
+  const book = books.filter((n) => n.id === bookId)[0]; // find book by id
 
-  if (book !== undefined) {
+  if (book) {
     const response = h
       .response({
         status: 'success',
@@ -177,11 +177,12 @@ const getBookByIdHandler = (request, h) => {
     return response;
   }
 
-  const response = h.response({
-    status: 'fail',
-    message: 'Buku yang anda cari tidak ditemukan',
-  });
-  response.code(404);
+  const response = h
+    .response({
+      status: 'fail',
+      message: 'Buku tidak ditemukan',
+    })
+    .code(404);
   return response;
 };
 
